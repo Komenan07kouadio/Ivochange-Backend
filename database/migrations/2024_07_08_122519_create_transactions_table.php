@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('utilisateur_id');
             $table->unsignedBigInteger('portefeuille_id');
+            $table->decimal('montant_envoye', 10, 2)->nullable();
+            $table->decimal('montant_reçu', 10, 2)->nullable();
             $table->decimal('montant', 10, 2);
             $table->unsignedBigInteger('devise_id');
             $table->enum('type', ['achat', 'vente']);
