@@ -15,6 +15,13 @@ use App\Http\Controllers\ParametreController;
 
 
 
+// Routes pour l'authentification et la gestion des utilisateurs
+Route::post('/login', [UtilisateurController::class, 'login']);
+Route::post('/logout', [UtilisateurController::class, 'logout']);
+Route::post('/forgot-password', [UtilisateurController::class, 'forgotPassword']);
+Route::post('/update-password', [UtilisateurController::class, 'updatePassword']);
+Route::post('/change-photo', [UtilisateurController::class, 'changePhoto']);
+
 
 //utilisateur
 Route::get('/users', [UtilisateurController::class, 'index']);
@@ -30,6 +37,7 @@ Route::get('/avis/{id}', [AvisController::class, 'show']);
 Route::put('/avis/{id}', [AvisController::class, 'update']);
 Route::delete('/avis/{id}', [AvisController::class, 'destroy']);
 
+//profil
 
  
 

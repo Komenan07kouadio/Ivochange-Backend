@@ -1,85 +1,203 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Utilisateur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class UtilisateurController extends Controller
 {
-    // Récupérer tous les utilisateurs
+    /**
+     * Connexion de l'utilisateur
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email|max:255',
+            'mot_de_passe' => 'required|string',
+        ]);
+    
+        $utilisateur = Utilisateur::where('email', $request->email)->first();
+        
+        if ($utilisateur) {
+            if (Hash::check($request->mot_de_passe, $utilisateur->password)) {
+                $request->session()->put('utilisateur', $utilisateur->id);
+                return response()->json([
+                    "succes" => true,
+                    "utilisateur" => $utilisateur,
+                ]);
+            } else {
+                return response()->json([
+                    "succes" => false,
+                    "utilisateur" => $utilisateur,
+                    "utilisateur" => $utilisateur,
+                ]);
+            }
+        } else {
+            return response()->json([
+                "succes" => false,
+                "utilisateur" => $utilisateur,
+                "utilisateur" => $utilisateur,
+                "message" => $utilisateur,
+            ]);
+        }
+    }
+    
+
+    /**
+     * Déconnexion de l'utilisateur
+     */
+    public function logout()
+    {
+        Auth::logout();
+        return response()->json(['message' => 'Déconnexion réussie'], 200);
+    }
+
+    /**
+     * Mot de passe oublié
+     */
+    public function forgotPassword(Request $request)
+    {
+        // Implémentez ici la logique pour envoyer un e-mail de réinitialisation de mot de passe
+    }
+
+    /**
+     * Changer le mot de passe
+     */
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'old_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->old_password, $user->mot_de_passe)) {
+            return response()->json(['message' => 'Ancien mot de passe incorrect'], 400);
+        }
+
+        $user->mot_de_passe = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json(['message' => 'Mot de passe mis à jour avec succès'], 200);
+    }
+
+    /**
+     * CRUD : Afficher tous les utilisateurs
+     */
     public function index()
     {
-        return response()->json(User::all(), 200);
+        $utilisateurs = Utilisateur::all();
+        $nombres = Utilisateur::count();
+        return response()->json([
+            "succes" => true,
+            "nombres" => $nombres,
+            "Utilisateurs" => $utilisateurs
+        ]);
     }
 
-    // Créer un nouvel utilisateur
+    /**
+     * CRUD : Créer un nouvel utilisateur
+     */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:4',
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:utilisateurs',
+            'mot_de_passe' => 'required|string',
         ]);
 
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        $utilisateur = Utilisateur::create([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'email' => $request->email,
+            'mot_de_passe' => Hash::make($request->mot_de_passe),
+            'date_inscription' => now(),
         ]);
 
-        return response()->json($user, 201);
+        return response()->json($utilisateur, 201);
     }
 
-    // Récupérer un utilisateur spécifique
+    /**
+     * CRUD : Afficher un utilisateur spécifique
+     */
     public function show($id)
     {
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-        }
-
-        return response()->json($user, 200);
+        $utilisateur = Utilisateur::findOrFail($id);
+        return response()->json($utilisateur);
     }
 
-    // Mettre à jour un utilisateur
+    /**
+     * CRUD : Mettre à jour un utilisateur
+     */
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'sometimes|required|string|min:8',
+        $validator = Validator::make($request->all(), [
+            'nom' => 'sometimes|required|string|max:255',
+            'prenom' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:utilisateurs,email,' . $id,
+            'mot_de_passe' => 'sometimes|required|string|min:8',
         ]);
 
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
 
-        if (isset($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
+        $utilisateur = Utilisateur::findOrFail($id);
+        $data = $request->all();
+        if (isset($data['mot_de_passe'])) {
+            $data['mot_de_passe'] = Hash::make($data['mot_de_passe']);
         }
+        $utilisateur->update($data);
 
-        $user->update($validatedData);
-
-        return response()->json($user, 200);
+        return response()->json($utilisateur);
     }
 
-    // Supprimer un utilisateur
+    /**
+     * CRUD : Supprimer un utilisateur
+     */
     public function destroy($id)
     {
-        $user = User::find($id);
+        $utilisateur = Utilisateur::findOrFail($id);
+        $utilisateur->delete();
 
-        if (!$user) {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        return response()->json(['message' => 'Utilisateur supprimé avec succès'], 204);
+    }
+
+    /**
+     * Changer la photo de l'utilisateur
+     */
+    public function changePhoto(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
         }
 
-        $user->delete();
+        $user = Auth::user();
+        $photo = $request->file('photo');
+        $photoName = time().'.'.$photo->getClientOriginalExtension();
+        $photo->move(public_path('photos'), $photoName);
 
-        return response()->json(null, 204);
+        $user->photo = $photoName;
+        $user->save();
+
+        return response()->json(['message' => 'Photo mise à jour avec succès', 'photo' => $photoName], 200);
     }
 }
