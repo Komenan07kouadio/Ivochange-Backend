@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('avis', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('utilisateur_id');
-            $table->integer('note')->check('note >= 1 AND note <= 5');
+            $table->string('note');
             $table->text('commentaire')->nullable();
             $table->timestamp('date')->useCurrent();
             $table->foreign('utilisateur_id')->references('id')->on('utilisateurs');

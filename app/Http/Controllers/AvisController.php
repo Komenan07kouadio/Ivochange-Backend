@@ -22,7 +22,7 @@ class AvisController extends Controller
     {
         $validatedData = $request->validate([
             'utilisateur_id' => 'required|integer|exists:utilisateurs,id',
-            'note' => 'required|integer|min:1|max:5',
+            'note' => 'required|string',
             'commentaire' => 'nullable|string',
         ]);
 
@@ -47,7 +47,7 @@ class AvisController extends Controller
     {
         $validatedData = $request->validate([
             'utilisateur_id' => 'sometimes|required|integer|exists:utilisateurs,id',
-            'note' => 'sometimes|required|integer|min:1|max:5',
+            'note' => 'sometimes|required|string',
             'commentaire' => 'nullable|string',
         ]);
 
