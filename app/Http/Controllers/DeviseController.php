@@ -16,8 +16,9 @@ class DeviseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => 'required|unique:devises|max:3',
+            'code' => 'required|unique:devises',
             'nom' => 'required',
+            'symbole'=> 'required',
         ]);
 
         $devise = Devise::create($request->all());
@@ -37,6 +38,7 @@ class DeviseController extends Controller
         $request->validate([
             'code' => 'required|unique:devises,code,' . $devise->id . '|max:3',
             'nom' => 'required',
+            'symbole'=> 'required',
         ]);
 
         $devise->update($request->all());
