@@ -19,11 +19,11 @@ class UtilisateurController extends Controller
             'email' => 'required|string|email|max:255',
             'mot_de_passe' => 'required|string',
         ]);
-    
+
         $utilisateur = Utilisateur::where('email', $request->email)->first();
-        
+
         if ($utilisateur) {
-            if (Hash::check($request->mot_de_passe, $utilisateur->password)) {
+            if (Hash::check($request->mot_de_passe, $utilisateur->mot_de_passe)) {
                 $request->session()->put('utilisateur', $utilisateur->id);
                 return response()->json([
                     "succes" => true,
@@ -32,20 +32,16 @@ class UtilisateurController extends Controller
             } else {
                 return response()->json([
                     "succes" => false,
-                    "utilisateur" => $utilisateur,
-                    "utilisateur" => $utilisateur,
+                    "message" => "Mot de passe incorrect",
                 ]);
             }
         } else {
             return response()->json([
                 "succes" => false,
-                "utilisateur" => $utilisateur,
-                "utilisateur" => $utilisateur,
-                "message" => $utilisateur,
+                "message" => "Utilisateur non trouvé",
             ]);
         }
     }
-    
 
     /**
      * Déconnexion de l'utilisateur
@@ -100,7 +96,7 @@ class UtilisateurController extends Controller
         return response()->json([
             "succes" => true,
             "nombres" => $nombres,
-            "Utilisateurs" => $utilisateurs
+            "utilisateurs" => $utilisateurs
         ]);
     }
 

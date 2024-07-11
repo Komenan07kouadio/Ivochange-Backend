@@ -37,13 +37,19 @@ Route::get('/avis/{id}', [AvisController::class, 'show']);
 Route::put('/avis/{id}', [AvisController::class, 'update']);
 Route::delete('/avis/{id}', [AvisController::class, 'destroy']);
 
-//profil
+//Devise 
+Route::get('/devises', [DeviseController::class, 'index']);
+Route::post('/devises', [DeviseController::class, 'store']);
+Route::get('/devises/{id}', [DeviseController::class, 'show']);
+Route::put('/devises/{id}', [DeviseController::class, 'update']);
+
+
 
  
 
 
 
-Route::get('/', [AuthController::class, 'login'])->name('connexion');
+Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });

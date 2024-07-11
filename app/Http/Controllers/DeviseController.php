@@ -2,47 +2,49 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Devise;
 use Illuminate\Http\Request;
+use App\Http\Resources\DeviseResource;
 
 class DeviseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return DeviseResource::collection(Devise::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'code' => 'required|unique:devises',
+            'nom' => 'required',
+            'symbole'=> 'required',
+        ]);
+
+        $devise = Devise::create($request->all());
+
+        return new DeviseResource($devise);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        return new DeviseResource(Devise::findOrFail($id));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $devise = Devise::findOrFail($id);
+
+        $request->validate([
+            'code' => 'required|unique:devises,code,' . $devise->id . '|max:3',
+            'nom' => 'required',
+            'symbole'=> 'required',
+        ]);
+
+        $devise->update($request->all());
+
+        return new DeviseResource($devise);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    
 }
