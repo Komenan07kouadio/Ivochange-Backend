@@ -22,7 +22,7 @@ class Utilisateur extends Authenticatable
     ];
 
     protected $hidden = [
-        'password', 
+        'mot_de_passe', 
     ];
 
     public function profils()
