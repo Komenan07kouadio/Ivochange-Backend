@@ -43,9 +43,18 @@ Route::post('/devises', [DeviseController::class, 'store']);
 Route::get('/devises/{id}', [DeviseController::class, 'show']);
 Route::put('/devises/{id}', [DeviseController::class, 'update']);
 
+//Taux d'échange
+Route::get('/taux_echanges', [TauxEchangeController::class, 'index']);
+Route::post('/taux_echanges', [TauxEchangeController::class, 'store']);
+Route::get('/taux_echanges/{id}', [TauxEchangeController::class, 'show']);
+Route::put('/taux_echanges/{id}', [TauxEchangeController::class, 'update']);
 
-
- 
+//Actualités
+Route::get('/actualites', [ActualiteController::class, 'index']);
+Route::post('/actualites', [ActualiteController::class, 'store']);
+Route::get('/actualites/{id}', [ActualiteController::class, 'show']);
+Route::put('/actualites/{id}', [ActualiteController::class, 'update']);
+Route::delete('/actualites/{id}', [ActualiteController::class, 'destroy']);
 
 
 
