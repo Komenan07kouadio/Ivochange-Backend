@@ -11,7 +11,7 @@ class ProfilController extends Controller
     /**
      * CRUD : Afficher tous les profils
      */
-    public function index()
+    public function getProfil()
     {
         $Profil = Profil::all();
         $nombres = Profil::count();
@@ -27,7 +27,7 @@ class ProfilController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function createProfil(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'utilisateur_id' => 'required|exists:utilisateurs,id',
@@ -64,7 +64,7 @@ class ProfilController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function getByIdProfil($id)
     {
         $profil = Profil::find($id);
 
@@ -82,7 +82,7 @@ class ProfilController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function updateProfil(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'nom' => 'sometimes|required|string|max:255',

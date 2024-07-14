@@ -44,20 +44,25 @@ Route::post('/devises', [DeviseController::class, 'store']);
 Route::get('/devises/{id}', [DeviseController::class, 'show']);
 Route::put('/devises/{id}', [DeviseController::class, 'update']);
 
-//Profil
-Route::get('/profil', [ProfilController::class, 'index']);
-Route::post('/profil', [ProfilController::class, 'store']);
-Route::get('/profil/{id}', [ProfilController::class, 'show']);
-Route::put('/profil/{id}', [ProfilController::class, 'update']);
+//Taux d'échange
+Route::get('/taux_echanges', [TauxEchangeController::class, 'index']);
+Route::post('/taux_echanges', [TauxEchangeController::class, 'store']);
+Route::get('/taux_echanges/{id}', [TauxEchangeController::class, 'show']);
+Route::put('/taux_echanges/{id}', [TauxEchangeController::class, 'update']);
 
+//Actualités
+Route::get('/actualites', [ActualiteController::class, 'index']);
+Route::post('/actualites', [ActualiteController::class, 'store']);
+Route::get('/actualites/{id}', [ActualiteController::class, 'show']);
+Route::put('/actualites/{id}', [ActualiteController::class, 'update']);
+Route::delete('/actualites/{id}', [ActualiteController::class, 'destroy']);
 
-//Porteuille
-Route::get('/Porteuille', [PortefeuilleController::class, 'index']);
-Route::post('/Porteuille', [PortefeuilleController::class, 'store']);
-Route::get('/Porteuille/{id}', [PortefeuilleController::class, 'show']);
-Route::put('/Porteuille/{id}', [PortefeuilleController::class, 'update']);
-Route::delete('/Porteuille/{id}', [PortefeuilleController::class, 'destroy']);
-
+// Définition des routes
+Route::get('/profil', [ProfilController::class, 'getProfil']);
+Route::post('/profil', [ProfilController::class, 'createProfil']);
+Route::get('/profil/{id}', [ProfilController::class, 'getByIdProfil']);
+Route::put('/profil/{id}', [ProfilController::class, 'updateProfil']);
+Route::delete('/profil/{id}', [ProfilController::class, 'deleteProfil']);
 
 Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
