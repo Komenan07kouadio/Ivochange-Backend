@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Avis;
+use App\Models\Models;
 use Illuminate\Http\Request;
 
 class AvisController extends Controller

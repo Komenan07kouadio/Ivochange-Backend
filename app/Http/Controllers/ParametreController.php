@@ -11,7 +11,13 @@ class ParametreController extends Controller
      */
     public function index()
     {
-        //
+            $Parametre = Parametre::all();
+            $nombres = Parametre::count();
+            return response()->json([
+                "succes" => true,
+                "nombres" => $nombres,
+                "utilisateurs" => $Parametre
+            ]);
     }
 
     /**

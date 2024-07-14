@@ -15,6 +15,7 @@ use App\Http\Controllers\ParametreController;
 
 
 
+
 // Routes pour l'authentification et la gestion des utilisateurs
 Route::post('/login', [UtilisateurController::class, 'login']);
 Route::post('/logout', [UtilisateurController::class, 'logout']);
@@ -43,10 +44,19 @@ Route::post('/devises', [DeviseController::class, 'store']);
 Route::get('/devises/{id}', [DeviseController::class, 'show']);
 Route::put('/devises/{id}', [DeviseController::class, 'update']);
 
+//Profil
+Route::get('/profil', [ProfilController::class, 'index']);
+Route::post('/profil', [ProfilController::class, 'store']);
+Route::get('/profil/{id}', [ProfilController::class, 'show']);
+Route::put('/profil/{id}', [ProfilController::class, 'update']);
 
 
- 
-
+//Porteuille
+Route::get('/Porteuille', [PortefeuilleController::class, 'index']);
+Route::post('/Porteuille', [PortefeuilleController::class, 'store']);
+Route::get('/Porteuille/{id}', [PortefeuilleController::class, 'show']);
+Route::put('/Porteuille/{id}', [PortefeuilleController::class, 'update']);
+Route::delete('/Porteuille/{id}', [PortefeuilleController::class, 'destroy']);
 
 
 Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
