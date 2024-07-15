@@ -56,7 +56,7 @@ Route::get('/actualites/{id}', [ActualiteController::class, 'show']);
 Route::put('/actualites/{id}', [ActualiteController::class, 'update']);
 Route::delete('/actualites/{id}', [ActualiteController::class, 'destroy']);
 
-// Définition des routes de Profil 
+// Définition des routes
 Route::get('/profil', [ProfilController::class, 'getProfil']);
 Route::post('/profil', [ProfilController::class, 'createProfil']);
 Route::get('/profil/{id}', [ProfilController::class, 'getByIdProfil']);
