@@ -70,11 +70,19 @@ Route::post('/parametres/{id}/password', [ParametresController::class, 'updatePa
 Route::post('/parametres/{id}/contact', [ParametresController::class, 'updateContact']);
 Route::get('/parametres/{id}/codeq', [ParametresController::class, 'printCodeQ']);
 
+//Portefeuilles
 Route::get('/portefeuilles', [PortefeuilleController::class, 'listePortefeuille']);
 Route::post('/portefeuilles', [PortefeuilleController::class, 'createPortefeuille']);
 Route::get('/portefeuilles/{id}', [PortefeuilleController::class, 'getPortefeuilleByID']);
 Route::put('/portefeuilles/{id}', [PortefeuilleController::class, 'modifierPortefeuille']);
 Route::delete('/portefeuilles/{id}', [PortefeuilleController::class, 'supprimerPortefeuille']);
+
+//Transaction
+Route::get('/transactions', [TransactionController::class, 'index']);
+Route::post('/transactions', [TransactionController::class, 'store']);
+Route::get('/transactions/{id}', [TransactionController::class, 'show']);
+Route::put('/transactions/{id}', [TransactionController::class, 'update']);
+Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
 
 Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
