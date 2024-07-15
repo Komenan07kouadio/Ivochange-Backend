@@ -1,70 +1,128 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Models;
+use App\Models\Avis;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AvisController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Afficher tous les avis
      */
-    public function index()
+ public function index()
     {
-        return Avis::all();
+        try {
+            $avis = Avis::all();
+            $nombreAvis = $avis->count();
+
+            return response()->json([
+                'success' => true,
+                'nombreAvis' => $nombreAvis,
+                'avis' => $avis
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
+
     /**
-     * Store a newly created resource in storage.
+     * Créer un nouvel avis
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'utilisateur_id' => 'required|integer|exists:utilisateurs,id',
-            'note' => 'required|string',
-            'commentaire' => 'nullable|string',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'note' => 'required|integer|min:1|max:5',
+                'commentaire' => 'required|string|max:255',
+            ], [
+                'note.required' => 'La note est requise',
+                'note.integer' => 'La note doit être un entier',
+                'note.min' => 'La note doit être au moins de 1',
+                'note.max' => 'La note ne doit pas dépasser 5',
+                'commentaire.required' => 'Le commentaire est requis',
+                'commentaire.string' => 'Le commentaire doit être une chaîne de caractères',
+                'commentaire.max' => 'Le commentaire ne doit pas dépasser 255 caractères',
+            ]);
 
-        $avis = Avis::create($validatedData);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 400);
+            }
 
-        return response()->json($avis, 201);
+            if (!session()->has('utilisateur')) {
+                return response()->json(['error' => 'Utilisateur non connecté'], 401);
+            }
+
+            $avisData = $request->all();
+            $avisData['utilisateur_id'] = session('utilisateur');
+
+            $avis = Avis::create($avisData);
+
+            return response()->json(['success' => true, 'avis' => $avis], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Mettre à jour un avis
      */
-    public function show(string $id)
+    public function update(Request $request, $id)
     {
-        $avis = Avis::findOrFail($id);
-        return response()->json($avis);
+        try {
+            $validator = Validator::make($request->all(), [
+                'note' => 'sometimes|required|integer|min:1|max:5',
+                'commentaire' => 'sometimes|required|string|max:255',
+            ], [
+                'note.required' => 'La note est requise',
+                'note.integer' => 'La note doit être un entier',
+                'note.min' => 'La note doit être au moins de 1',
+                'note.max' => 'La note ne doit pas dépasser 5',
+                'commentaire.required' => 'Le commentaire est requis',
+                'commentaire.string' => 'Le commentaire doit être une chaîne de caractères',
+                'commentaire.max' => 'Le commentaire ne doit pas dépasser 255 caractères',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 400);
+            }
+
+            if (!session()->has('utilisateur')) {
+                return response()->json(['error' => 'Utilisateur non connecté'], 401);
+            }
+
+            $avis = Avis::where('utilisateur_id', session('utilisateur'))->findOrFail($id);
+            $avis->update($request->all());
+
+            return response()->json(['success' => true, 'avis' => $avis], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Avis non trouvé'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Supprimer un avis
      */
-    public function update(Request $request, string $id)
+    public function destroy($id)
     {
-        $validatedData = $request->validate([
-            'utilisateur_id' => 'sometimes|required|integer|exists:utilisateurs,id',
-            'note' => 'sometimes|required|string',
-            'commentaire' => 'nullable|string',
-        ]);
+        try {
+            if (!session()->has('utilisateur')) {
+                return response()->json(['error' => 'Utilisateur non connecté'], 401);
+            }
 
-        $avis = Avis::findOrFail($id);
-        $avis->update($validatedData);
+            $avis = Avis::where('utilisateur_id', session('utilisateur'))->findOrFail($id);
+            $avis->delete();
 
-        return response()->json($avis);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $avis = Avis::findOrFail($id);
-        $avis->delete();
-
-        return response()->json(null, 204);
+            return response()->json(['success' => true, 'message' => 'Avis supprimé avec succès'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Avis non trouvé'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

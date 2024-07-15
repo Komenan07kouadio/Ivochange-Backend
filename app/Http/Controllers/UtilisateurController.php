@@ -59,33 +59,7 @@ class UtilisateurController extends Controller
     {
         // Implémentez ici la logique pour envoyer un e-mail de réinitialisation de mot de passe
     }
-
-    /**
-     * Changer le mot de passe
-     */
-    public function updatePassword(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'old_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        $user = Auth::user();
-
-        if (!Hash::check($request->old_password, $user->mot_de_passe)) {
-            return response()->json(['message' => 'Ancien mot de passe incorrect'], 400);
-        }
-
-        $user->mot_de_passe = Hash::make($request->new_password);
-        $user->save();
-
-        return response()->json(['message' => 'Mot de passe mis à jour avec succès'], 200);
-    }
-
+    
     /**
      * CRUD : Afficher tous les utilisateurs
      */
@@ -176,24 +150,49 @@ class UtilisateurController extends Controller
     /**
      * Changer la photo de l'utilisateur
      */
-    public function changePhoto(Request $request)
+        public function changePhoto(Request $request)
     {
+        // Valider la requête
         $validator = Validator::make($request->all(), [
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photoProfil' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            return response()->json(['error' => $validator->errors()], 400);
         }
 
-        $user = Auth::user();
-        $photo = $request->file('photo');
-        $photoName = time().'.'.$photo->getClientOriginalExtension();
-        $photo->move(public_path('photos'), $photoName);
+        // Vérifier si l'utilisateur est connecté
+        if (session()->has('utilisateur')) {
+            $utilisateur = Utilisateur::find(session('utilisateur'));
 
-        $user->photo = $photoName;
-        $user->save();
+            // Traiter la requête AJAX
+            if ($request->ajax()) {
+                $photoProfil = $request->file('photoProfil');
+                $extensionFichier = $photoProfil->getClientOriginalExtension();
+                $nomDuFichier = 'User-' . $utilisateur->id . '-prof.' . $extensionFichier;
 
-        return response()->json(['message' => 'Photo mise à jour avec succès', 'photo' => $photoName], 200);
+                $dossierContentFile = public_path('assets/galerie/utilisateurs/profil/');
+
+                // Déplacer et enregistrer la nouvelle photo
+                $uploadPhoto = $photoProfil->move($dossierContentFile, $nomDuFichier);
+
+                if ($uploadPhoto) {
+                    // Mettre à jour le chemin de l'avatar dans la base de données
+                    $utilisateur->avatar = $nomDuFichier;
+                    $utilisateur->save();
+
+                    return response()->json([
+                        'success' => 'Image enregistrée avec succès',
+                        'avatar' => $nomDuFichier
+                    ]);
+                } else {
+                    return response()->json(['error' => "Impossible d'enregistrer l'image"], 500);
+                }
+            } else {
+                return response()->json(['error' => 'Requête non autorisée'], 403);
+            }
+        } else {
+            return response()->json(['error' => 'Utilisateur non connecté'], 401);
+        }
     }
 }

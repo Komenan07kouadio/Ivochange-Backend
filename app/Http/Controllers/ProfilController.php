@@ -13,13 +13,12 @@ class ProfilController extends Controller
      */
     public function getProfil()
     {
-        $Profil = Profil::all();
-        $nombres = Profil::count();
-        return response()->json([
-            "succes" => true,
-            "nombres" => $nombres,
-            "Profils" => $Profil
-        ]);
+        try {
+            $profils = Profil::all();
+            return response()->json(['profils' => $profils], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Erreur lors de la récupération des profils', 'error' => $e->getMessage()], 500);
+        }
     }
     /**
      * Créer un nouveau profil pour un utilisateur.
@@ -82,7 +81,7 @@ class ProfilController extends Controller
      * @param int $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateProfil(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'nom' => 'sometimes|required|string|max:255',
@@ -90,7 +89,15 @@ class ProfilController extends Controller
             'date_naissance' => 'sometimes|date',
             'adresse' => 'sometimes|required|string|max:255',
             'telephone' => 'sometimes|required|string|max:20',
-        ]);
+        ],
+        [
+            'utilisateur_id' => 'Veuillez renseignez ce champs',
+            "nom" => "Veuillez renseignez ce champs",
+            "prenom" => "Veuillez renseignez ce champs",
+            "adresse" => "Veuillez renseignez ce champs",
+            "telephone" => "Veuillez renseignez ce champs",
+        ],
+    );
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);

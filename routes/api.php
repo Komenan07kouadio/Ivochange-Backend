@@ -10,7 +10,7 @@ use App\Http\Controllers\DeviseController;
 use App\Http\Controllers\TauxEchangeController;
 use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\AvisController;
-use App\Http\Controllers\ParametreController;
+use App\Http\Controllers\ParametresController;
 
 
 
@@ -18,9 +18,8 @@ use App\Http\Controllers\ParametreController;
 
 // Routes pour l'authentification et la gestion des utilisateurs
 Route::post('/login', [UtilisateurController::class, 'login']);
-Route::post('/logout', [UtilisateurController::class, 'logout']);
+Route::post('/logout', [UtilisateurController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/forgot-password', [UtilisateurController::class, 'forgotPassword']);
-Route::post('/update-password', [UtilisateurController::class, 'updatePassword']);
 Route::post('/change-photo', [UtilisateurController::class, 'changePhoto']);
 
 
@@ -57,12 +56,19 @@ Route::get('/actualites/{id}', [ActualiteController::class, 'show']);
 Route::put('/actualites/{id}', [ActualiteController::class, 'update']);
 Route::delete('/actualites/{id}', [ActualiteController::class, 'destroy']);
 
-// Définition des routes
+// Définition des routes de Profil 
 Route::get('/profil', [ProfilController::class, 'getProfil']);
 Route::post('/profil', [ProfilController::class, 'createProfil']);
 Route::get('/profil/{id}', [ProfilController::class, 'getByIdProfil']);
 Route::put('/profil/{id}', [ProfilController::class, 'updateProfil']);
 Route::delete('/profil/{id}', [ProfilController::class, 'deleteProfil']);
+
+//Paramètres
+Route::get('/parametres', [ParametresController::class, 'listeParametre']);
+Route::post('/parametres/{id}/avatar', [ParametresController::class, 'updateAvatar']);
+Route::post('/parametres/{id}/password', [ParametresController::class, 'updatePassword']);
+Route::post('/parametres/{id}/contact', [ParametresController::class, 'updateContact']);
+Route::get('/parametres/{id}/codeq', [ParametresController::class, 'printCodeQ']);
 
 Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
