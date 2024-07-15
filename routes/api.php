@@ -70,6 +70,12 @@ Route::post('/parametres/{id}/password', [ParametresController::class, 'updatePa
 Route::post('/parametres/{id}/contact', [ParametresController::class, 'updateContact']);
 Route::get('/parametres/{id}/codeq', [ParametresController::class, 'printCodeQ']);
 
+Route::get('/portefeuilles', [PortefeuilleController::class, 'listePortefeuille']);
+Route::post('/portefeuilles', [PortefeuilleController::class, 'createPortefeuille']);
+Route::get('/portefeuilles/{id}', [PortefeuilleController::class, 'getPortefeuilleByID']);
+Route::put('/portefeuilles/{id}', [PortefeuilleController::class, 'modifierPortefeuille']);
+Route::delete('/portefeuilles/{id}', [PortefeuilleController::class, 'supprimerPortefeuille']);
+
 Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
