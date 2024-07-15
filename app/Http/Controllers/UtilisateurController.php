@@ -145,7 +145,7 @@ class UtilisateurController extends Controller
             'nom' => 'sometimes|required|string|max:255',
             'prenom' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:utilisateurs,email,' . $id,
-            'mot_de_passe' => 'sometimes|required|string|min:8',
+            'mot_de_passe' => 'sometimes|required|string',
         ]);
 
         if ($validator->fails()) {

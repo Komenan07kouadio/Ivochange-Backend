@@ -10,7 +10,7 @@ use App\Http\Controllers\DeviseController;
 use App\Http\Controllers\TauxEchangeController;
 use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\AvisController;
-
+use App\Http\Controllers\ParametreController;
 
 
 
@@ -56,11 +56,7 @@ Route::get('/actualites/{id}', [ActualiteController::class, 'show']);
 Route::put('/actualites/{id}', [ActualiteController::class, 'update']);
 Route::delete('/actualites/{id}', [ActualiteController::class, 'destroy']);
 
-//Transactions
-Route::get('/transactions', [TransactionController::class, 'index']);
-Route::post('/transactions', [TransactionController::class, 'store']);
-Route::get('/transactions/{id}', [TransactionController::class, 'show']);
-Route::put('/transactions/{id}', [TransactionController::class, 'update']);
+
 
 Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Portefeuille;
 use Illuminate\Http\Request;
 
 class PortefeuilleController extends Controller
@@ -11,7 +12,15 @@ class PortefeuilleController extends Controller
      */
     public function index()
     {
-        //
+        {
+            $Portefeuille = Portefeuille::all();
+            $nombres = Portefeuille::count();
+            return response()->json([
+                "succes" => true,
+                "nombres" => $nombres,
+                "Portefeuille" => $Portefeuille
+            ]);
+        }
     }
 
     /**
