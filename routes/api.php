@@ -11,6 +11,7 @@ use App\Http\Controllers\TauxEchangeController;
 use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\AvisController;
 use App\Http\Controllers\ParametresController;
+use App\Http\Controllers\ReserveController;
 
 
 
@@ -83,6 +84,13 @@ Route::post('/transactions', [TransactionController::class, 'store']);
 Route::get('/transactions/{id}', [TransactionController::class, 'show']);
 Route::put('/transactions/{id}', [TransactionController::class, 'update']);
 Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+
+//Reserve
+Route::get('/reserves', [ReserveController::class, 'index']);
+Route::post('/reserves', [ReserveController::class, 'store']);
+Route::get('/reserves/{id}', [ReserveController::class, 'show']);
+Route::put('/reserves/{id}', [ReserveController::class, 'update']);
+Route::delete('/reserves/{id}', [ReserveController::class, 'destroy']);
 
 Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
