@@ -16,6 +16,7 @@ class Utilisateur extends Authenticatable
         'prenom',
         'email',
         'telephone',
+        'pays',
         'mot_de_passe',
         'date_inscription',
         'statut',

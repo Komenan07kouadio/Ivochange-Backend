@@ -16,11 +16,12 @@ return new class extends Migration
             $table->unsignedBigInteger('utilisateur_id');
             $table->unsignedBigInteger('portefeuille_id');
             $table->decimal('montant_envoye', 10, 2)->nullable();
+            $table->string('numero_compte_envoye');
             $table->decimal('montant_reçu', 10, 2)->nullable();
-            $table->decimal('montant', 10, 2);
+            $table->string('numero_compte_reçu');
             $table->unsignedBigInteger('devise_id');
-            $table->enum('type', ['achat', 'vente']);
             $table->timestamp('date')->useCurrent();
+            $table->enum('statut', ['attente', 'approuve', 'annule'])->default('attente');
             $table->foreign('utilisateur_id')->references('id')->on('utilisateurs');
             $table->foreign('portefeuille_id')->references('id')->on('portefeuilles');
             $table->foreign('devise_id')->references('id')->on('devises');

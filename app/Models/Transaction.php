@@ -13,10 +13,12 @@ class Transaction extends Model
         'utilisateur_id',
         'portefeuille_id',
         'montant_envoye',
-        'montant',
+        'numero_compte_envoyé',
         'montant_reçu',
+        'numero_compte_reçu',
         'devise_id',
         'type',
+        'statut_transaction',
     ];
 
     public function utilisateur()

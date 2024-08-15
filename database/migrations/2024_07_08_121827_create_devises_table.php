@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->string('nom');
             $table->string('symbole')->nullable();
+            $table->string('frais');
             $table->timestamps();
         });
     }
