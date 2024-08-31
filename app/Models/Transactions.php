@@ -5,34 +5,34 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction extends Model
+class Transactions extends Model
 {
     use HasFactory;
 
+    protected $table = 'transactions';
+
+    protected $primaryKey = 'id_transaction';
+
     protected $fillable = [
+        'transaction_id',
         'utilisateur_id',
-        'portefeuille_id',
         'montant_envoye',
         'numero_compte_envoyé',
         'montant_reçu',
         'numero_compte_reçu',
         'devise_id',
-        'type',
-        'statut_transaction',
+        'montant_frais_inclus_envoye',
+        'montant_frais_inclus_reçu',
+        'statut',
     ];
 
     public function utilisateur()
     {
-        return $this->belongsTo(Utilisateur::class);
-    }
-
-    public function portefeuille()
-    {
-        return $this->belongsTo(Portefeuille::class);
+        return $this->belongsTo(Utilisateurs::class);
     }
 
     public function devise()
     {
-        return $this->belongsTo(Devise::class);
+        return $this->belongsTo(Devises::class);
     }
 }

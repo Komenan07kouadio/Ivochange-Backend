@@ -14,18 +14,20 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('utilisateur_id');
-            $table->unsignedBigInteger('portefeuille_id');
             $table->decimal('montant_envoye', 10, 2)->nullable();
-            $table->string('numero_compte_envoye');
+            $table->string('numero_compte_envoye')->nullable(); // Peut-être nullable si pas toujours utilisé
             $table->decimal('montant_reçu', 10, 2)->nullable();
-            $table->string('numero_compte_reçu');
+            $table->string('numero_compte_reçu')->nullable(); // Peut-être nullable si pas toujours utilisé
             $table->unsignedBigInteger('devise_id');
-            $table->timestamp('date')->useCurrent();
+            $table->decimal('montant_frais_inclus_envoye', 10, 2)->nullable();
+            $table->decimal('montant_frais_inclus_reçu', 10, 2)->nullable();
+            $table->dateTime('date_transaction')->useCurrent(); // Utilisation de l'heure actuelle par défaut
             $table->enum('statut', ['attente', 'approuve', 'annule'])->default('attente');
-            $table->foreign('utilisateur_id')->references('id')->on('utilisateurs');
-            $table->foreign('portefeuille_id')->references('id')->on('portefeuilles');
-            $table->foreign('devise_id')->references('id')->on('devises');
             $table->timestamps();
+
+            // Clés étrangères
+            $table->foreign('utilisateur_id')->references('id')->on('utilisateurs')->onDelete('cascade');
+            $table->foreign('devise_id')->references('id')->on('devises')->onDelete('cascade');
         });
     }
 

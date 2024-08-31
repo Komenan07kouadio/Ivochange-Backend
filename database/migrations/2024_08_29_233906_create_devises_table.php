@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('devises', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
             $table->string('nom');
             $table->string('symbole')->nullable();
-            $table->string('frais');
+            $table->decimal('reserve', 10, 2);
             $table->timestamps();
         });
     }

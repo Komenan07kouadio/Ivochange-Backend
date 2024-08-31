@@ -3,42 +3,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable; // Import de la classe Authenticatable
+use Laravel\Sanctum\HasApiTokens; // Import du trait HasApiTokens
+use Illuminate\Notifications\Notifiable; // Import du trait Notifiable
 
-class Utilisateur extends Authenticatable
+class Utilisateurs extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'nom',
-        'prenom',
-        'email',
+        'prenoms',
         'telephone',
         'pays',
+        'email',
         'mot_de_passe',
         'date_inscription',
         'statut',
     ];
 
     protected $hidden = [
+        'email',
         'mot_de_passe', 
     ];
 
-    public function profils()
-    {
-        return $this->hasOne(Profil::class);
-    }
-
-    public function portefeuilles()
-    {
-        return $this->hasMany(Portefeuille::class);
-    }
-
     public function transactions()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transactions::class);
     }
 
     public function avis()

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TauxEchange;
+use App\Models\Taux_echange;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +14,7 @@ class TauxEchangeController extends Controller
      */
     public function index()
     {
-        $tauxEchanges = TauxEchange::all();
+        $tauxEchanges = Taux_echange::all();
         return response()->json($tauxEchanges);
     }
 
@@ -27,9 +27,8 @@ class TauxEchangeController extends Controller
         Log::info('Request data:', $request->all());
 
         $validator = Validator::make($request->all(), [
-            'devise_source' => 'required|exists:devises,id',
-            'devise_cible' => 'required|exists:devises,id',
             'taux' => 'required|numeric',
+            'date_taux'=> 'date_format:format'
         ]);
 
         if ($validator->fails()) {
@@ -37,10 +36,9 @@ class TauxEchangeController extends Controller
         }
 
         // Ensure that all required fields are passed to create method
-        $tauxEchange = TauxEchange::create([
-            'devise_source' => $request->devise_source,
-            'devise_cible' => $request->devise_cible,
+        $tauxEchange = Taux_echange::create([
             'taux' => $request->taux,
+            'date_taux' => $request->date_taux,
         ]);
 
         return response()->json($tauxEchange, 201);
@@ -51,7 +49,7 @@ class TauxEchangeController extends Controller
      */
     public function show($id)
     {
-        $tauxEchange = TauxEchange::findOrFail($id);
+        $tauxEchange = Taux_echange::findOrFail($id);
         return response()->json($tauxEchange);
     }
 
@@ -61,16 +59,16 @@ class TauxEchangeController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'devise_source' => 'sometimes|required|exists:devises,id',
-            'devise_cible' => 'sometimes|required|exists:devises,id',
             'taux' => 'sometimes|required|numeric',
+            'date_taux'=> 'date_format:format'
+            
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        $tauxEchange = TauxEchange::findOrFail($id);
+        $tauxEchange = Taux_echange::findOrFail($id);
         $tauxEchange->update($request->all());
 
         return response()->json($tauxEchange);
@@ -81,7 +79,7 @@ class TauxEchangeController extends Controller
      */
     public function destroy($id)
     {
-        $tauxEchange = TauxEchange::findOrFail($id);
+        $tauxEchange = Taux_echange::findOrFail($id);
         $tauxEchange->delete();
 
         return response()->json(['message' => 'Taux d\'échange supprimé avec succès'], 204);

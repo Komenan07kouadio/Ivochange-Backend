@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Transaction;
+use App\Models\Transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -26,7 +26,7 @@ class TransactionController extends Controller
     public function index()
     {
         try {
-            $transactions = Transaction::where('utilisateur_id', session('utilisateur'))->get();
+            $transactions = Transactions::where('utilisateur_id', session('utilisateur'))->get();
             return response()->json(['success' => true, 'transactions' => $transactions]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -39,27 +39,42 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'portefeuille_id' => 'required|exists:portefeuilles,id',
+            $validator = Validator::make($request->all(), [         
+                'utilisateur_id' => 'required|exists:utilisateurs,id',
                 'montant_envoye' => 'required|numeric',
-                'montant' => 'required|numeric',
+                'numero_compte_envoye' => 'required|numeric',
                 'montant_reçu' => 'required|numeric',
+                'numero_compte_reçu' => 'required|numeric',
                 'devise_id' => 'required|exists:devises,id',
-                'type' => 'required|string',
+                'montant_frais_inclus_envoye' => 'required|numeric',
+                'montant_frais_inclus_reçu' => 'required|numeric',
+                'statut' => 'required|string',
             ],
             [
-                'portefeuille_id.required' => 'Le champ portefeuille_id est requis.',
-                'portefeuille_id.exists' => 'Le portefeuille sélectionné n\'existe pas.',
-                'montant_envoye.required' => 'Le champ montant_envoye est requis.',
-                'montant_envoye.numeric' => 'Le champ montant_envoye doit être numérique.',
-                'montant.required' => 'Le champ montant est requis.',
-                'montant.numeric' => 'Le champ montant doit être numérique.',
-                'montant_reçu.required' => 'Le champ montant_reçu est requis.',
-                'montant_reçu.numeric' => 'Le champ montant_reçu doit être numérique.',
-                'devise_id.required' => 'Le champ devise_id est requis.',
+                'utilisateur_id.required' => 'Le champ id_utilisateur est requis.',
+                'utilisateur_id.exists' => 'L\'utilisateur sélectionné n\'existe pas.',
+
+                'montant_envoye.required' => 'Le champ montant envoyé est requis.',
+                'montant_envoye.numeric' => 'Le champ montant envoyé doit être numérique.',
+
+                'numero_compte_envoye.required' => 'Le champ numéro de compte envoyé est requis.',
+                'numero_compte_envoye.numeric' => 'Le numéro de compte envoyé doit être numérique.',
+
+                'montant_reçu.required' => 'Le champ montant reçu est requis.',
+                'montant_reçu.numeric' => 'Le champ montant reçu doit être numérique.',
+
+                'numero_compte_reçu.required' => 'Le champ numéro de compte reçu est requis.',
+                'numero_compte_reçu.numeric' => 'Le numéro de compte reçu doit être numérique.',
+
+                'devise_id.required' => 'Le champ devise est requis.',
                 'devise_id.exists' => 'La devise sélectionnée n\'existe pas.',
-                'type.required' => 'Le champ type est requis.',
-                'type.string' => 'Le champ type doit être une chaîne de caractères.',
+
+                'montant_frais_inclus_envoye.required' => 'Le champ montant avec frais inclus envoyé est requis.',
+                'montant_frais_inclus_envoye.numeric' => 'Le montant avec frais inclus envoyé doit être numérique.',
+
+                'montant_frais_inclus_reçu.required' => 'Le champ montant avec frais inclus reçu est requis.',
+                'montant_frais_inclus_reçu.numeric' => 'Le montant avec frais inclus reçu doit être numérique.',
+                        
             ]);
     
             if ($validator->fails()) {
@@ -67,11 +82,11 @@ class TransactionController extends Controller
             }
     
             $transactionData = $request->all();
-            $transactionData['utilisateur_id'] = session('utilisateur');
+            $transactionData['id_utilisateur'] = session('utilisateurs');
     
-            $transaction = Transaction::create($transactionData);
+            $transaction = Transactions::create($transactionData);
     
-            return response()->json(['success' => true, 'transaction' => $transaction], 201);
+            return response()->json(['success' => true, 'transactions' => $transaction], 201);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 400);
         } catch (Exception $e) {
@@ -87,26 +102,40 @@ class TransactionController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'portefeuille_id' => 'sometimes|required|exists:portefeuilles,id',
+                'utilisateur_id' => 'sometimes|required|exists:utilisateurs,id',
                 'montant_envoye' => 'sometimes|required|numeric',
-                'montant' => 'sometimes|required|numeric',
+                'numero_compte_envoye' => 'sometimes|required|numeric',
                 'montant_reçu' => 'sometimes|required|numeric',
+                'numero_compte_reçu' => 'sometimes|required|numeric',
                 'devise_id' => 'sometimes|required|exists:devises,id',
-                'type' => 'sometimes|required|string',
+                'montant_frais_inclus_envoye' => 'sometimes|required|numeric',
+                'montant_frais_inclus_reçu' => 'sometimes|required|numeric',
+                'statut' => 'sometimes|required|string',
             ],
             [
-                 'portefeuille_id.required' => 'Le champ portefeuille_id est requis.',
-                'portefeuille_id.exists' => 'Le portefeuille sélectionné n\'existe pas.',
-                'montant_envoye.required' => 'Le champ montant_envoye est requis.',
-                'montant_envoye.numeric' => 'Le champ montant_envoye doit être numérique.',
-                'montant.required' => 'Le champ montant est requis.',
-                'montant.numeric' => 'Le champ montant doit être numérique.',
-                'montant_reçu.required' => 'Le champ montant_reçu est requis.',
-                'montant_reçu.numeric' => 'Le champ montant_reçu doit être numérique.',
-                'devise_id.required' => 'Le champ devise_id est requis.',
+                'utilisateur_id.required' => 'Le champ id_utilisateur est requis.',
+                'utilisateur_id.exists' => 'L\'utilisateur sélectionné n\'existe pas.',
+
+                'montant_envoye.required' => 'Le champ montant envoyé est requis.',
+                'montant_envoye.numeric' => 'Le champ montant envoyé doit être numérique.',
+
+                'numero_compte_envoye.required' => 'Le champ numéro de compte envoyé est requis.',
+                'numero_compte_envoye.numeric' => 'Le numéro de compte envoyé doit être numérique.',
+
+                'montant_reçu.required' => 'Le champ montant reçu est requis.',
+                'montant_reçu.numeric' => 'Le champ montant reçu doit être numérique.',
+
+                'numero_compte_reçu.required' => 'Le champ numéro de compte reçu est requis.',
+                'numero_compte_reçu.numeric' => 'Le numéro de compte reçu doit être numérique.',
+
+                'devise_id.required' => 'Le champ devise est requis.',
                 'devise_id.exists' => 'La devise sélectionnée n\'existe pas.',
-                'type.required' => 'Le champ type est requis.',
-                'type.string' => 'Le champ type doit être une chaîne de caractères.',
+
+                'montant_frais_inclus_envoye.required' => 'Le champ montant avec frais inclus envoyé est requis.',
+                'montant_frais_inclus_envoye.numeric' => 'Le montant avec frais inclus envoyé doit être numérique.',
+
+                'montant_frais_inclus_reçu.required' => 'Le champ montant avec frais inclus reçu est requis.',
+                'montant_frais_inclus_reçu.numeric' => 'Le montant avec frais inclus reçu doit être numérique.',
             ],
         );
 
@@ -114,10 +143,10 @@ class TransactionController extends Controller
                 throw new ValidationException($validator);
             }
 
-            $transaction = Transaction::where('utilisateur_id', session('utilisateur'))->findOrFail($id);
+            $transaction = Transactions::where('utilisateur_id', session('utilisateur'))->findOrFail($id);
             $transaction->update($request->all());
 
-            return response()->json(['success' => true, 'transaction' => $transaction]);
+            return response()->json(['success' => true, 'transactions' => $transaction]);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Transaction not found'], 404);
         } catch (ValidationException $e) {
@@ -133,7 +162,7 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         try {
-            $transaction = Transaction::where('utilisateur_id', session('utilisateur'))->findOrFail($id);
+            $transaction = Transactions::where('utilisateur_id', session('utilisateurs'))->findOrFail($id);
             $transaction->delete();
 
             return response()->json(['success' => true, 'message' => 'Transaction supprimée avec succès']);
