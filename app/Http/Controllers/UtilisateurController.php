@@ -15,33 +15,32 @@ class UtilisateurController extends Controller
      */
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email|max:255',
-            'mot_de_passe' => 'required|string',
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        $utilisateur = Utilisateur::where('email', $request->email)->first();
+        if (Auth::attempt($credentials)) {
+            // Récupérer l'utilisateur authentifié
+            $user = Auth::user();
 
-        if ($utilisateur) {
-            if (Hash::check($request->mot_de_passe, $utilisateur->mot_de_passe)) {
-                $request->session()->put('utilisateur', $utilisateur->id);
-                return response()->json([
-                    "succes" => true,
-                    "utilisateur" => $utilisateur,
-                ]);
+            // Vérifier le rôle de l'utilisateur
+            if ($user->role === 'superAdmin') {
+                // Rediriger vers la vue superAdmin
+                return redirect()->route('superAdmin.dashboard');
+            } elseif ($user->role === 'admin') {
+                // Rediriger vers la vue admin
+                return redirect()->route('admin.dashboard');
+            } elseif ($user->role === 'user') {
+                // Rediriger vers la vue utilisateur
+                return redirect()->route('user.dashboard');
             } else {
-                return response()->json([
-                    "succes" => false,
-                    "message" => "Mot de passe incorrect",
-                ]);
+                // Gérer d'autres rôles ou rediriger vers une page par défaut
+                return redirect()->route('default.page');
             }
-        } else {
-            return response()->json([
-                "succes" => false,
-                "message" => "Utilisateur non trouvé",
-            ]);
         }
+
+        // Si la connexion échoue, renvoyer à la page de connexion avec un message d'erreur
+        return redirect()->route('connexion')->withErrors('Identifiants incorrects');
     }
+
 
     /**
      * Déconnexion de l'utilisateur
@@ -73,7 +72,7 @@ class UtilisateurController extends Controller
             "utilisateurs" => $utilisateurs
         ]);
     }
-
+    
     /**
      * CRUD : Créer un nouvel utilisateur
      */

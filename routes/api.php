@@ -12,9 +12,34 @@ use App\Http\Controllers\ActualiteController;
 use App\Http\Controllers\AvisController;
 use App\Http\Controllers\ParametresController;
 use App\Http\Controllers\ReserveController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\AutorisationController;
+use App\Http\Controllers\DashboardDataController;
 
+ //Role
+ Route::get('/listeRole',[RoleController::class, 'index'])->middleware('check.permissions:liste_roles');
+ Route::get('/getRoleBy/{id}',[RoleController::class, 'show'])->middleware('check.permissions:detail_role');
+ Route::post('/saveRole',[RoleController::class, 'store'])->middleware('check.permissions:creer_role');
+ Route::put('/updateRole/{id}',[RoleController::class, 'update'])->middleware('check.permissions:modifier_role');
+ Route::delete('/deleteRole/{id}',[RoleController::class, 'destroy'])->middleware('check.permissions:supprimer_role');
+  
+ //dashboard
+  Route::get('/dashboard/{id}', [DashboardDataController::class, 'getDashboardData'])->middleware('check.permissions:recuperer_dashboard_data');
 
+ // Permission
+ Route::post('/savePermission', [PermissionController::class, 'store'])->middleware('check.permissions:enregistrer_permission');
+ Route::put('/updatePermission/{id}', [PermissionController::class, 'update'])->middleware('check.permissions:modifier_permission');
+ Route::get('/listePermissions', [PermissionController::class, 'index'])->middleware('check.permissions:liste_permissions');
+ Route::get('/permission/{id}', [PermissionController::class, 'show'])->middleware('check.permissions:detail_permission');
+ Route::delete('/deletePermission/{id}', [PermissionController::class, 'destroy'])->middleware('check.permissions:supprimer_permission');
 
+ // Autorisation
+Route::post('/saveAutorisation/{role_id}', [AutorisationController::class, 'assignPermissions'])->middleware('check.permissions:attribuer_permissions_role');
+Route::put('/updateAutorisation/{role_id}', [AutorisationController::class, 'update'])->middleware('check.permissions:modifier_autorisations');
+Route::get('/listeAutorisations', [AutorisationController::class, 'index'])->middleware('check.permissions:liste_autorisations');
+Route::post('/checkAutorisation/{role_id}', [AutorisationController::class, 'checkPermissions'])->middleware('check.permissions:verifier_permissions_role');
+Route::delete('/deleteAutorisation/{role_id}', [AutorisationController::class, 'removePermissions'])->middleware('check.permissions:supprimer_permissions_role');
 
 
 // Routes pour l'authentification et la gestion des utilisateurs
@@ -91,6 +116,19 @@ Route::post('/reserves', [ReserveController::class, 'store']);
 Route::get('/reserves/{id}', [ReserveController::class, 'show']);
 Route::put('/reserves/{id}', [ReserveController::class, 'update']);
 Route::delete('/reserves/{id}', [ReserveController::class, 'destroy']);
+
+// Route pour le dashboard superAdmin
+Route::get('/superAdmin', [DashboardDataController::class, 'index'])->name('superAdmin.dashboard')->middleware('auth');
+
+// Route pour le dashboard admin
+Route::get('/admin', [DashboardDataController::class, 'index'])->name('admin.dashboard')->middleware('auth');
+
+// Route pour le dashboard utilisateur
+Route::get('/user', [DashboardDataController::class, 'index'])->name('user.dashboard')->middleware('auth');
+
+// Route par défaut si nécessaire
+Route::get('/default', [DashboardDataController::class, 'index'])->name('default.page')->middleware('auth');
+Route::get('/dashboard', [DashboardDataController::class, 'dashboard'])->name('default.page')->middleware('auth');
 
 Route::get('/', [UtilisateurController::class, 'login'])->name('connexion');
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
