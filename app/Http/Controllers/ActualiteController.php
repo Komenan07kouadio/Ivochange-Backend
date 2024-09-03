@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Actualite;
+use App\Models\Actualites;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -13,7 +13,7 @@ class ActualiteController extends Controller
      */
     public function index()
     {
-        $actualites = Actualite::all();
+        $actualites = Actualites::all();
         return response()->json($actualites);
     }
 
@@ -31,7 +31,7 @@ class ActualiteController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $actualite = Actualite::create([
+        $actualite = Actualites::create([
             'titre' => $request->titre,
             'contenu' => $request->contenu,
         ]);
@@ -44,7 +44,7 @@ class ActualiteController extends Controller
      */
     public function show($id)
     {
-        $actualite = Actualite::findOrFail($id);
+        $actualite = Actualites::findOrFail($id);
         return response()->json($actualite);
     }
 
@@ -62,7 +62,7 @@ class ActualiteController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $actualite = Actualite::findOrFail($id);
+        $actualite = Actualites::findOrFail($id);
         $actualite->update($request->all());
 
         return response()->json($actualite);
@@ -73,7 +73,7 @@ class ActualiteController extends Controller
      */
     public function destroy($id)
     {
-        $actualite = Actualite::findOrFail($id);
+        $actualite = Actualites::findOrFail($id);
         $actualite->delete();
 
         return response()->json(['message' => 'Actualité supprimée avec succès'], 204);

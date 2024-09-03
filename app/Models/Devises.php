@@ -5,24 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Devise extends Model
+class Devises extends Model
 {
     use HasFactory;
+    protected $table = 'devises';
+
+    protected $primaryKey = 'devise_id';
 
     protected $fillable = [
-        'code',
         'nom',
         'symbole',
+        'reserve',
     ];
 
-    public function portefeuilles()
+    public function Taux_echange()
     {
-        return $this->hasMany(Portefeuille::class);
-    }
-
-    public function tauxEchanges()
-    {
-        return $this->hasMany(TauxEchange::class);
+        return $this->hasMany(Taux_echange::class);
     }
 }
-

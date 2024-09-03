@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Utilisateur;
+use App\Models\Utilisateurs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -15,22 +15,20 @@ class UtilisateurController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $request->validate([
+            'email' => 'required|string|email|max:255',
+            'mot_de_passe' => 'required|string',
+        ]);
 
-        if (Auth::attempt($credentials)) {
-            // Récupérer l'utilisateur authentifié
-            $user = Auth::user();
+        $utilisateur = Utilisateurs::where('email', $request->email)->first();
 
-            // Vérifier le rôle de l'utilisateur
-            if ($user->role === 'superAdmin') {
-                // Rediriger vers la vue superAdmin
-                return redirect()->route('superAdmin.dashboard');
-            } elseif ($user->role === 'admin') {
-                // Rediriger vers la vue admin
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->role === 'user') {
-                // Rediriger vers la vue utilisateur
-                return redirect()->route('user.dashboard');
+        if ($utilisateur) {
+            if (Hash::check($request->mot_de_passe, $utilisateur->mot_de_passe)) {
+                $request->session()->put('utilisateurs', $utilisateur->id);
+                return response()->json([
+                    "succes" => true,
+                    "utilisateurs" => $utilisateur,
+                ]);
             } else {
                 // Gérer d'autres rôles ou rediriger vers une page par défaut
                 return redirect()->route('default.page');
@@ -64,8 +62,8 @@ class UtilisateurController extends Controller
      */
     public function index()
     {
-        $utilisateurs = Utilisateur::all();
-        $nombres = Utilisateur::count();
+        $utilisateurs = Utilisateurs::all();
+        $nombres = Utilisateurs::count();
         return response()->json([
             "succes" => true,
             "nombres" => $nombres,
@@ -80,18 +78,23 @@ class UtilisateurController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
+            'prenoms' => 'required|string|max:255',
+            'telephone' => 'required|numeric|max:15|unique:utilisateurs',
+            'pays' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:utilisateurs',
             'mot_de_passe' => 'required|string',
+            'date_inscription' => 'required|date'
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        $utilisateur = Utilisateur::create([
+        $utilisateur = Utilisateurs::create([
             'nom' => $request->nom,
-            'prenom' => $request->prenom,
+            'prenoms' => $request->prenom,
+            'telephone' => $request->telephone,
+            'pays' => $request->pays,
             'email' => $request->email,
             'mot_de_passe' => Hash::make($request->mot_de_passe),
             'date_inscription' => now(),
@@ -105,7 +108,7 @@ class UtilisateurController extends Controller
      */
     public function show($id)
     {
-        $utilisateur = Utilisateur::findOrFail($id);
+        $utilisateur = Utilisateurs::findOrFail($id);
         return response()->json($utilisateur);
     }
 
@@ -116,7 +119,9 @@ class UtilisateurController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nom' => 'sometimes|required|string|max:255',
-            'prenom' => 'sometimes|required|string|max:255',
+            'prenoms' => 'sometimes|required|string|max:255',
+            'telephone' => 'sometimes|required|numeric|max:15|unique:utilisateurs,telephone' . $id,
+            'pays' => 'required|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:utilisateurs,email,' . $id,
             'mot_de_passe' => 'sometimes|required|string',
         ]);
@@ -125,7 +130,7 @@ class UtilisateurController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $utilisateur = Utilisateur::findOrFail($id);
+        $utilisateur = Utilisateurs::findOrFail($id);
         $data = $request->all();
         if (isset($data['mot_de_passe'])) {
             $data['mot_de_passe'] = Hash::make($data['mot_de_passe']);
@@ -140,7 +145,7 @@ class UtilisateurController extends Controller
      */
     public function destroy($id)
     {
-        $utilisateur = Utilisateur::findOrFail($id);
+        $utilisateur = Utilisateurs::findOrFail($id);
         $utilisateur->delete();
 
         return response()->json(['message' => 'Utilisateur supprimé avec succès'], 204);
@@ -161,8 +166,8 @@ class UtilisateurController extends Controller
         }
 
         // Vérifier si l'utilisateur est connecté
-        if (session()->has('utilisateur')) {
-            $utilisateur = Utilisateur::find(session('utilisateur'));
+        if (session()->has('utilisateurs')) {
+            $utilisateur = Utilisateurs::find(session('utilisateur'));
 
             // Traiter la requête AJAX
             if ($request->ajax()) {
