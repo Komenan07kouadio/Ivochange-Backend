@@ -22,11 +22,11 @@ Route::post('/change-photo', [UtilisateurController::class, 'changePhoto']);
 
 
 //utilisateur
-Route::get('/users', [UtilisateurController::class, 'index']);
-Route::post('/users', [UtilisateurController::class, 'store']);
-Route::get('/users/{id}', [UtilisateurController::class, 'show']);
-Route::put('/users/{id}', [UtilisateurController::class, 'update']);
-Route::delete('/users/{id}', [UtilisateurController::class, 'destroy']);
+Route::get('/utilisateurs', [UtilisateurController::class, 'index']);
+Route::post('/utilisateurs', [UtilisateurController::class, 'store']);
+Route::get('/utilisateurs/{id}', [UtilisateurController::class, 'show']);
+Route::put('/utilisateurs/{id}', [UtilisateurController::class, 'update']);
+Route::delete('/utilisateurs/{id}', [UtilisateurController::class, 'destroy']);
 
 //avis
 Route::get('/avis', [AvisController::class, 'index']);
@@ -35,7 +35,7 @@ Route::get('/avis/{id}', [AvisController::class, 'show']);
 Route::put('/avis/{id}', [AvisController::class, 'update']);
 Route::delete('/avis/{id}', [AvisController::class, 'destroy']);
 
-//Devise 
+//Devise
 Route::get('/devises', [DeviseController::class, 'index']);
 Route::post('/devises', [DeviseController::class, 'store']);
 Route::get('/devises/{id}', [DeviseController::class, 'show']);

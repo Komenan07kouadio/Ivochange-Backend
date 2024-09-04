@@ -56,7 +56,7 @@ class UtilisateurController extends Controller
     {
         // Implémentez ici la logique pour envoyer un e-mail de réinitialisation de mot de passe
     }
-    
+
     /**
      * CRUD : Afficher tous les utilisateurs
      */
@@ -70,7 +70,7 @@ class UtilisateurController extends Controller
             "utilisateurs" => $utilisateurs
         ]);
     }
-    
+
     /**
      * CRUD : Créer un nouvel utilisateur
      */
@@ -79,7 +79,7 @@ class UtilisateurController extends Controller
         $validator = Validator::make($request->all(), [
             'nom' => 'required|string|max:255',
             'prenoms' => 'required|string|max:255',
-            'telephone' => 'required|numeric|max:15|unique:utilisateurs',
+            'telephone' => 'required|numeric|max:10|unique:utilisateurs',
             'pays' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:utilisateurs',
             'mot_de_passe' => 'required|string',
@@ -120,7 +120,7 @@ class UtilisateurController extends Controller
         $validator = Validator::make($request->all(), [
             'nom' => 'sometimes|required|string|max:255',
             'prenoms' => 'sometimes|required|string|max:255',
-            'telephone' => 'sometimes|required|numeric|max:15|unique:utilisateurs,telephone' . $id,
+            'telephone' => 'sometimes|required|numeric|max:10|unique:utilisateurs,telephone' . $id,
             'pays' => 'required|string|max:255',
             'email' => 'sometimes|required|string|email|max:255|unique:utilisateurs,email,' . $id,
             'mot_de_passe' => 'sometimes|required|string',
