@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable; // Import de la classe Authenticatable
 use Laravel\Sanctum\HasApiTokens; // Import du trait HasApiTokens
 use Illuminate\Notifications\Notifiable; // Import du trait Notifiable
+use Spatie\Permission\Traits\HasRoles;
 
 class Utilisateurs extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
         'nom',
