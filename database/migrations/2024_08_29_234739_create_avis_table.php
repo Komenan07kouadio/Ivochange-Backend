@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('note');
             $table->text('commentaire')->nullable();
             $table->timestamp('date')->useCurrent();
+            $table->boolean('isActive')->default(true);
+            $table->boolean('isDelete')->default(false);
             $table->foreign('utilisateur_id')->references('id')->on('utilisateurs');
             $table->timestamps();
         });

@@ -61,47 +61,58 @@ class UtilisateurController extends Controller
      * CRUD : Afficher tous les utilisateurs
      */
     public function index()
-    {
-        $utilisateurs = Utilisateurs::all();
-        $nombres = Utilisateurs::count();
-        return response()->json([
-            "succes" => true,
-            "nombres" => $nombres,
-            "utilisateurs" => $utilisateurs
-        ]);
-    }
+            {
+                // Récupérer tous les utilisateurs depuis la base de données
+                $utilisateurs = Utilisateurs::all();
+                
+                // Compter le nombre total d'utilisateurs
+                $nombres = $utilisateurs->count(); 
+                
+                // Retourner une réponse JSON avec un statut de succès, le nombre d'utilisateurs et les données des utilisateurs
+                return response()->json([
+                    "succes" => true,
+                    "nombres" => $nombres,
+                    "utilisateurs" => $utilisateurs
+                ], 200); // Code HTTP 200 pour signifier que la requête a réussi
+            }
 
-    /**
-     * CRUD : Créer un nouvel utilisateur
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'nom' => 'required|string|max:255',
-            'prenoms' => 'required|string|max:255',
-            'telephone' => 'required|numeric|max:10|unique:utilisateurs',
-            'pays' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:utilisateurs',
-            'mot_de_passe' => 'required|string',
-            'date_inscription' => 'required|date'
-        ]);
+            public function store(Request $request)
+        {
+            // Validation des données de la requête
+            $validatedData = $request->validate([
+                'nom' => 'required|string|max:255',
+                'prenoms' => 'required|string|max:255',
+                'telephone' => 'required|digits:10|unique:utilisateurs',
+                'pays' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:utilisateurs',
+                'mot_de_passe' => 'required|string',
+                'date_inscription' => 'required|date'
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
+            try {
+                // Création d'un nouvel utilisateur avec les données validées
+                $utilisateur = Utilisateurs::create([
+                    'nom' => $validatedData['nom'],
+                    'prenoms' => $validatedData['prenoms'],
+                    'telephone' => $validatedData['telephone'],
+                    'pays' => $validatedData['pays'],
+                    'email' => $validatedData['email'],
+                    'mot_de_passe' => bcrypt($validatedData['mot_de_passe']), // Assurez-vous de hacher le mot de passe
+                    'date_inscription' => $validatedData['date_inscription']
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'utilisateur' => $utilisateur
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur lors de la création de l\'utilisateur.',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
         }
-
-        $utilisateur = Utilisateurs::create([
-            'nom' => $request->nom,
-            'prenoms' => $request->prenom,
-            'telephone' => $request->telephone,
-            'pays' => $request->pays,
-            'email' => $request->email,
-            'mot_de_passe' => Hash::make($request->mot_de_passe),
-            'date_inscription' => now(),
-        ]);
-
-        return response()->json($utilisateur, 201);
-    }
 
     /**
      * CRUD : Afficher un utilisateur spécifique

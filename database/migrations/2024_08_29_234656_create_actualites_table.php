@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('titre');
             $table->text('contenu');
             $table->timestamp('date_publication')->useCurrent();
+            $table->boolean('isActive')->default(true);
+            $table->boolean('isDelete')->default(false);
             $table->timestamps();
         });
     }

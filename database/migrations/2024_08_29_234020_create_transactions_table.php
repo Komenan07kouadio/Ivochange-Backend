@@ -23,6 +23,9 @@ return new class extends Migration
             $table->decimal('montant_frais_inclus_reçu', 10, 2)->nullable();
             $table->dateTime('date_transaction')->useCurrent(); // Utilisation de l'heure actuelle par défaut
             $table->enum('statut', ['attente', 'approuve', 'annule'])->default('attente');
+            
+            $table->boolean('isActive')->default(true);
+            $table->boolean('isDelete')->default(false);
             $table->timestamps();
 
             // Clés étrangères

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('mot_de_passe');
             $table->timestamp('date_creation')->useCurrent();
             $table->enum('statut', ['actif', 'inactif', 'banni'])->default('actif');
+            $table->boolean('isActive')->default(true);
+            $table->boolean('isDelete')->default(false);
             $table->timestamps();
         });
     }
