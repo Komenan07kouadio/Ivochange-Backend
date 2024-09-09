@@ -77,43 +77,51 @@ class UtilisateurController extends Controller
             }
 
             public function store(Request $request)
-        {
-            // Validation des données de la requête
-            $validatedData = $request->validate([
-                'nom' => 'required|string|max:255',
-                'prenoms' => 'required|string|max:255',
-                'telephone' => 'required|digits:10|unique:utilisateurs',
-                'pays' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:utilisateurs',
-                'mot_de_passe' => 'required|string',
-                'date_inscription' => 'required|date'
-            ]);
-
-            try {
-                // Création d'un nouvel utilisateur avec les données validées
-                $utilisateur = Utilisateurs::create([
-                    'nom' => $validatedData['nom'],
-                    'prenoms' => $validatedData['prenoms'],
-                    'telephone' => $validatedData['telephone'],
-                    'pays' => $validatedData['pays'],
-                    'email' => $validatedData['email'],
-                    'mot_de_passe' => bcrypt($validatedData['mot_de_passe']), // Assurez-vous de hacher le mot de passe
-                    'date_inscription' => $validatedData['date_inscription']
+            {
+                // Validation des données de la requête
+                $validator = Validator::make($request->all(), [
+                    'nom' => 'required|string|max:255',
+                    'prenoms' => 'required|string|max:255',
+                    'telephone' => 'required|digits:10|unique:utilisateurs',
+                    'pays' => 'required|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:utilisateurs',
+                    'mot_de_passe' => 'required|string',
+                    'date_inscription' => 'required|date'
+                ],
+                [
+                    'nom.required' => 'Le champ nom est obligatoire.',
+                    'prenoms.required' => 'Le champ prénoms est obligatoire.',
+                    'telephone.required' => 'Le champ téléphone est obligatoire et doit être unique.',
+                    'email.required' => 'Le champ email est obligatoire et doit être un email valide.',
+                    'mot_de_passe.required' => 'Le mot de passe est obligatoire.',
+                    'date_inscription.required' => 'La date d\'inscription est obligatoire et doit être une date valide.',
                 ]);
-
-                return response()->json([
-                    'success' => true,
-                    'utilisateur' => $utilisateur
-                ]);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Erreur lors de la création de l\'utilisateur.',
-                    'error' => $e->getMessage()
-                ], 500);
+        
+                // Si la validation échoue, retourner les erreurs
+                if ($validator->fails()) {
+                    return response()->json($validator->errors(), 400);
+                }
+        
+                // Création de l'utilisateur
+                try {
+                    $utilisateur = Utilisateurs::create([
+                        'nom' => $request->nom,
+                        'prenoms' => $request->prenoms, // Assurez-vous que la clé est 'prenoms' et non 'prenom'
+                        'telephone' => $request->telephone,
+                        'pays' => $request->pays,
+                        'email' => $request->email,
+                        'mot_de_passe' => Hash::make($request->mot_de_passe),
+                        'date_inscription' => $request->date_inscription,
+                    ]);
+        
+                    // Réponse en cas de succès
+                    return response()->json($utilisateur, 201);
+                } catch (\Exception $e) {
+                    // Réponse en cas d'erreur interne
+                    return response()->json(['error' => 'Erreur lors de la création de l\'utilisateur.'], 500);
+                }
             }
-        }
-
+        
     /**
      * CRUD : Afficher un utilisateur spécifique
      */
