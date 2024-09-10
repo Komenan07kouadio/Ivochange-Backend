@@ -16,13 +16,10 @@ class PermissionController extends Controller
     {
         $categories = [
             'utilisateurs' => 'Utilisateurs',
-            'Transaction' => 'Transaction',
+            'Transactions' => 'Transactions',
             'Devise' => 'Devise',
-            'Portefeuille' => 'Portefeuille',
-            'reserve' => 'reserve',
             'Avis' => 'Avis',
-            'TauxEchange' => 'TauxEchange',
-            'Profile' => 'Profile',
+            'Taux_echange' => 'TauxEchange',
 
         ];
 
@@ -48,10 +45,6 @@ class PermissionController extends Controller
                 ],
                 'Échange de monnaie' => [
                     'title' => 'Permissions liées à l\'échange de monnaie',
-                    'permissions' => []
-                ],
-                'Protefeuille' => [
-                    'title' => 'Permissions liées à un portefeuille',
                     'permissions' => []
                 ],
                 'Devise' => [
