@@ -39,7 +39,7 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [         
+            $validator = Validator::make($request->all(), [
                 'utilisateur_id' => 'required|exists:utilisateurs,id',
                 'montant_envoye' => 'required|numeric',
                 'numero_compte_envoye' => 'required|numeric',
@@ -74,18 +74,20 @@ class TransactionController extends Controller
 
                 'montant_frais_inclus_reçu.required' => 'Le champ montant avec frais inclus reçu est requis.',
                 'montant_frais_inclus_reçu.numeric' => 'Le montant avec frais inclus reçu doit être numérique.',
-                        
+
             ]);
-    
+
             if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
-    
+
+            // Création de l'utilisateur
+           
             $transactionData = $request->all();
             $transactionData['id_utilisateur'] = session('utilisateurs');
-    
+
             $transaction = Transactions::create($transactionData);
-    
+
             return response()->json(['success' => true, 'transactions' => $transaction], 201);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 400);
@@ -93,7 +95,7 @@ class TransactionController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
 
     /**
      * Mettre à jour une transaction de l'utilisateur actuel
