@@ -158,28 +158,39 @@ class UtilisateurController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Validation des champs
         $validator = Validator::make($request->all(), [
-            'nom' => 'sometimes|required|string|max:255',
-            'prenoms' => 'sometimes|required|string|max:255',
-            'telephone' => 'sometimes|required|numeric|max:10|unique:utilisateurs,telephone' . $id,
-            'pays' => 'required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:utilisateurs,email,' . $id,
-            'mot_de_passe' => 'sometimes|required|string',
+            'nom' => 'sometimes|string|max:255',
+            'prenoms' => 'sometimes|string|max:255',
+            'telephone' => 'sometimes|numeric|digits:10|unique:utilisateurs,telephone,' . $id,
+            'pays' => 'sometimes|string|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:utilisateurs,email,' . $id,
+            'mot_de_passe' => 'sometimes|string',
         ]);
 
+        // Si la validation échoue
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
+        // Recherche de l'utilisateur
         $utilisateur = Utilisateurs::findOrFail($id);
+
+        // Récupération des données du formulaire
         $data = $request->all();
+
+        // Si le mot de passe est modifié, le hacher
         if (isset($data['mot_de_passe'])) {
             $data['mot_de_passe'] = Hash::make($data['mot_de_passe']);
         }
+
+        // Mise à jour de l'utilisateur
         $utilisateur->update($data);
 
+        // Retourner les données de l'utilisateur mis à jour
         return response()->json($utilisateur);
     }
+
 
     /**
      * CRUD : Supprimer un utilisateur
