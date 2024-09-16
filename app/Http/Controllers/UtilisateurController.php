@@ -43,37 +43,59 @@ class UtilisateurController extends Controller
     /**
      * Déconnexion de l'utilisateur
      */
-    public function logout()
-    {
-        Auth::logout();
-        return response()->json(['message' => 'Déconnexion réussie'], 200);
-    }
+            public function logout()
+            {
+                Auth::logout();
+                return response()->json(['message' => 'Déconnexion réussie'], 200);
+            }
 
-    /**
-     * Mot de passe oublié
-     */
-    public function forgotPassword(Request $request)
-    {
-        // Implémentez ici la logique pour envoyer un e-mail de réinitialisation de mot de passe
-    }
+            /**
+             * Mot de passe oublié
+             */
+            public function forgotPassword(Request $request)
+            {
+                // Implémentez ici la logique pour envoyer un e-mail de réinitialisation de mot de passe
+            }
 
-    /**
-     * CRUD : Afficher tous les utilisateurs
-     */
-    public function index()
+            /**
+             * CRUD : Afficher tous les utilisateurs
+             */
+            // public function index()
+            // {
+            //     // Récupérer tous les utilisateurs depuis la base de données
+            //     $utilisateurs = Utilisateurs::all();
+                
+            //     // Compter le nombre total d'utilisateurs
+            //     $nombres = $utilisateurs->count(); 
+                
+            //     // Retourner une réponse JSON avec un statut de succès, le nombre d'utilisateurs et les données des utilisateurs
+            //     return response()->json([
+            //         "succes" => true,
+            //         "nombres" => $nombres,
+            //         "utilisateurs" => $utilisateurs
+            //     ], 200); // Code HTTP 200 pour signifier que la requête a réussi
+            // }
+            public function index()
             {
                 // Récupérer tous les utilisateurs depuis la base de données
                 $utilisateurs = Utilisateurs::all();
-                
+
+                // Vérifie si le champ email est bien présent
+                foreach ($utilisateurs as $user) {
+                    if (!$user->email) {
+                        return response()->json(['error' => "L'email n'est pas disponible pour l'utilisateur: {$user->nom}"], 400);
+                    }
+                }
+
                 // Compter le nombre total d'utilisateurs
-                $nombres = $utilisateurs->count(); 
-                
-                // Retourner une réponse JSON avec un statut de succès, le nombre d'utilisateurs et les données des utilisateurs
+                $nombres = $utilisateurs->count();
+
+                // Retourner une réponse JSON avec un statut de succès
                 return response()->json([
                     "succes" => true,
                     "nombres" => $nombres,
                     "utilisateurs" => $utilisateurs
-                ], 200); // Code HTTP 200 pour signifier que la requête a réussi
+                ], 200);
             }
 
             public function store(Request $request)

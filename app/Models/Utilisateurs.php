@@ -25,7 +25,6 @@ class Utilisateurs extends Authenticatable
     ];
 
     protected $hidden = [
-        'email',
         'mot_de_passe', 
     ];
 

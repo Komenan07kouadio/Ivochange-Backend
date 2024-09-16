@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('prenoms');
             $table->string('telephone');
             $table->string('pays');
-            $table->timestamp('date_inscription')->nullable();
+            $table->date('date_inscription');
             $table->string('email')->unique();
             $table->string('mot_de_passe');
             $table->timestamp('date_creation')->useCurrent();
