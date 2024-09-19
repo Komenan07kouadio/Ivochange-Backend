@@ -15,31 +15,44 @@ class UtilisateurController extends Controller
      */
     public function login(Request $request)
     {
+        // Validation des champs
         $request->validate([
             'email' => 'required|string|email|max:255',
             'mot_de_passe' => 'required|string',
         ]);
-
+    
+        // Rechercher l'utilisateur par email
         $utilisateur = Utilisateurs::where('email', $request->email)->first();
-
+    
+        // Si l'utilisateur est trouvé
         if ($utilisateur) {
+            // Vérification du mot de passe
             if (Hash::check($request->mot_de_passe, $utilisateur->mot_de_passe)) {
+                // Stocker l'utilisateur dans la session
                 $request->session()->put('utilisateurs', $utilisateur->id);
+                
+                // Retourner une réponse JSON avec succès
                 return response()->json([
-                    "succes" => true,
+                    "success" => true,
+                    "message" => "Connexion réussie. Bienvenue, " . $utilisateur->nom . "!",
                     "utilisateurs" => $utilisateur,
                 ]);
             } else {
-                // Gérer d'autres rôles ou rediriger vers une page par défaut
-                return redirect()->route('default.page');
+                // Si le mot de passe est incorrect
+                return response()->json([
+                    "success" => false,
+                    "message" => "Mot de passe incorrect",
+                ], 401); // Code d'erreur 401 : Unauthorized
             }
         }
-
-        // Si la connexion échoue, renvoyer à la page de connexion avec un message d'erreur
-        return redirect()->route('connexion')->withErrors('Identifiants incorrects');
+    
+        // Si l'utilisateur n'est pas trouvé
+        return response()->json([
+            "success" => false,
+            "message" => "Identifiants incorrects",
+        ], 404); // Code d'erreur 404 : Not Found
     }
-
-
+    
     /**
      * Déconnexion de l'utilisateur
      */
