@@ -13,6 +13,47 @@ class UtilisateurController extends Controller
     /**
      * Connexion de l'utilisateur
      */
+    // public function login(Request $request)
+    // {
+    //     // Validation des champs
+    //     $request->validate([
+    //         'email' => 'required|string|email|max:255',
+    //         'mot_de_passe' => 'required|string',
+    //     ]);
+    
+    //     // Rechercher l'utilisateur par email
+    //     $utilisateur = Utilisateurs::where('email', $request->email)->first();
+    
+    //     // Si l'utilisateur est trouvé
+    //     if ($utilisateur) {
+    //         // Vérification du mot de passe
+    //         if (Hash::check($request->mot_de_passe, $utilisateur->mot_de_passe)) {
+                
+    //             // Générer un token d'API pour l'utilisateur
+    //             $token = $utilisateur->createToken('auth_token')->plainTextToken;
+    
+    //             // Retourner une réponse JSON avec succès et le token
+    //             return response()->json([
+    //                 "success" => true,
+    //                 "message" => "Connexion réussie. Bienvenue, " . $utilisateur->nom . "!",
+    //                 "utilisateur" => $utilisateur,
+    //                 "token" => $token, // Le token sera utilisé pour l'authentification future
+    //             ]);
+    //         } else {
+    //             // Si le mot de passe est incorrect
+    //             return response()->json([
+    //                 "success" => false,
+    //                 "message" => "Mot de passe incorrect",
+    //             ], 401); // Code d'erreur 401 : Unauthorized
+    //         }
+    //     }
+    
+    //     // Si l'utilisateur n'est pas trouvé
+    //     return response()->json([
+    //         "success" => false,
+    //         "message" => "Identifiants incorrects",
+    //     ], 404); // Code d'erreur 404 : Not Found
+    // }
     public function login(Request $request)
     {
         // Validation des champs
@@ -20,22 +61,21 @@ class UtilisateurController extends Controller
             'email' => 'required|string|email|max:255',
             'mot_de_passe' => 'required|string',
         ]);
-    
+
         // Rechercher l'utilisateur par email
         $utilisateur = Utilisateurs::where('email', $request->email)->first();
-    
+
         // Si l'utilisateur est trouvé
         if ($utilisateur) {
             // Vérification du mot de passe
             if (Hash::check($request->mot_de_passe, $utilisateur->mot_de_passe)) {
-                // Stocker l'utilisateur dans la session
-                $request->session()->put('utilisateurs', $utilisateur->id);
-                
-                // Retourner une réponse JSON avec succès
+                // Générer un token d'API pour l'utilisateur
+                $token = $utilisateur->createToken('auth_token')->plainTextToken;
+
+                // Retourner uniquement le token
                 return response()->json([
                     "success" => true,
-                    "message" => "Connexion réussie. Bienvenue, " . $utilisateur->nom . "!",
-                    "utilisateurs" => $utilisateur,
+                    "token" => $token, // Le token sera utilisé pour l'authentification future
                 ]);
             } else {
                 // Si le mot de passe est incorrect
@@ -45,14 +85,23 @@ class UtilisateurController extends Controller
                 ], 401); // Code d'erreur 401 : Unauthorized
             }
         }
-    
+
         // Si l'utilisateur n'est pas trouvé
         return response()->json([
             "success" => false,
             "message" => "Identifiants incorrects",
         ], 404); // Code d'erreur 404 : Not Found
     }
-    
+
+    // Exemple d'une action protégée par l'authentification
+    public function actionProtegee()
+    {
+        return response()->json([
+            "message" => "Vous êtes connecté et pouvez accéder à cette action protégée",
+        ]);
+    }
+
+
     /**
      * Déconnexion de l'utilisateur
      */
