@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Devises extends Model
 {
     use HasFactory;
-    protected $table = 'devises';
-
     protected $primaryKey = 'devise_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'nom',

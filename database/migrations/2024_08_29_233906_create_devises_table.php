@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('devises', function (Blueprint $table) {
-            $table->id();
-            $table->string('nom');
-            $table->string('symbole')->nullable();
-            $table->decimal('reserve', 10, 2);
+            $table->id('devise_id'); // Clé primaire personnalisée
+            $table->string('nom')->unique();
+            $table->string('symbole');
+            $table->decimal('reserve', 15, 2);
             $table->timestamps();
         });
     }

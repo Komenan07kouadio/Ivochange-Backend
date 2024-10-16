@@ -26,7 +26,8 @@ class TransactionController extends Controller
     public function index()
     {
         try {
-            $transactions = Transactions::where('utilisateur_id', session('utilisateur'))->get();
+            //$transactions = Transactions::where('utilisateur_id', auth()->user()->id)->get();
+            $transactions = Transactions::where('utilisateur_id', session('utilisateurs'))->get();
             return response()->json(['success' => true, 'transactions' => $transactions]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -44,8 +45,9 @@ class TransactionController extends Controller
                 'montant_envoye' => 'required|numeric',
                 'numero_compte_envoye' => 'required|numeric',
                 'montant_reçu' => 'required|numeric',
-                'numero_compte_reçu' => 'required|numeric',
-                'devise_id' => 'required|exists:devises,id',
+                'numero_compte_reçu' => 'required|string',
+                'devise_envoyee_id' => 'required|exists:devises,id',
+                'devise_recue_id' => 'required|exists:devises,id',
                 'montant_frais_inclus_envoye' => 'required|numeric',
                 'montant_frais_inclus_reçu' => 'required|numeric',
                 'statut' => 'required|string',
@@ -55,19 +57,22 @@ class TransactionController extends Controller
                 'utilisateur_id.exists' => 'L\'utilisateur sélectionné n\'existe pas.',
 
                 'montant_envoye.required' => 'Le champ montant envoyé est requis.',
-                'montant_envoye.numeric' => 'Le champ montant envoyé doit être numérique.',
+                'montant_envoye.exists' => 'Le champ montant envoyé doit être numérique.',
 
                 'numero_compte_envoye.required' => 'Le champ numéro de compte envoyé est requis.',
-                'numero_compte_envoye.numeric' => 'Le numéro de compte envoyé doit être numérique.',
+                'numero_compte_envoye.exists' => 'Le numéro de compte envoyé doit être numérique.',
 
                 'montant_reçu.required' => 'Le champ montant reçu est requis.',
-                'montant_reçu.numeric' => 'Le champ montant reçu doit être numérique.',
+                'montant_reçu.exists' => 'Le champ montant reçu doit être numérique.',
 
                 'numero_compte_reçu.required' => 'Le champ numéro de compte reçu est requis.',
-                'numero_compte_reçu.numeric' => 'Le numéro de compte reçu doit être numérique.',
+                'numero_compte_reçu.exists' => 'Le numéro de compte reçu doit être numérique.',
 
-                'devise_id.required' => 'Le champ devise est requis.',
-                'devise_id.exists' => 'La devise sélectionnée n\'existe pas.',
+                'devise_envoyee_id.required' => 'Le champ de devise envoyée est réquis',
+                'devise_envoyee_id.exists' => 'La devise reçue n\'existe pas.',
+
+                'devise_recue_id.required' => 'Le champ de devise envoyée est réquis',
+                'devise_recue_id.exists'=> 'La devise reçue n\'existe pas.',
 
                 'montant_frais_inclus_envoye.required' => 'Le champ montant avec frais inclus envoyé est requis.',
                 'montant_frais_inclus_envoye.numeric' => 'Le montant avec frais inclus envoyé doit être numérique.',
@@ -78,19 +83,14 @@ class TransactionController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw new ValidationException($validator);
+                return response()->json(['error' => $validator->errors()], 400);
             }
 
-            // Création de l'utilisateur
-           
+            // Enregistrement de la transaction
             $transactionData = $request->all();
-            $transactionData['id_utilisateur'] = session('utilisateurs');
-
             $transaction = Transactions::create($transactionData);
 
-            return response()->json(['success' => true, 'transactions' => $transaction], 201);
-        } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 400);
+            return response()->json(['success' => true, 'transaction' => $transaction], 201);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -104,19 +104,20 @@ class TransactionController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'utilisateur_id' => 'sometimes|required|exists:utilisateurs,id',
+                //'utilisateur_id' => 'sometimes|required|exists:utilisateurs,id',
                 'montant_envoye' => 'sometimes|required|numeric',
                 'numero_compte_envoye' => 'sometimes|required|numeric',
                 'montant_reçu' => 'sometimes|required|numeric',
                 'numero_compte_reçu' => 'sometimes|required|numeric',
-                'devise_id' => 'sometimes|required|exists:devises,id',
+                'devise_envoyee_id' => 'sometimes|required|exists:devises,id',
+                'devise_recue_id' =>  'sometimes|required|exists:devises,id',
                 'montant_frais_inclus_envoye' => 'sometimes|required|numeric',
                 'montant_frais_inclus_reçu' => 'sometimes|required|numeric',
                 'statut' => 'sometimes|required|string',
             ],
             [
-                'utilisateur_id.required' => 'Le champ id_utilisateur est requis.',
-                'utilisateur_id.exists' => 'L\'utilisateur sélectionné n\'existe pas.',
+                //'utilisateur_id.required' => 'Le champ id_utilisateur est requis.',
+                //'utilisateur_id.exists' => 'L\'utilisateur sélectionné n\'existe pas.',
 
                 'montant_envoye.required' => 'Le champ montant envoyé est requis.',
                 'montant_envoye.numeric' => 'Le champ montant envoyé doit être numérique.',
@@ -130,8 +131,11 @@ class TransactionController extends Controller
                 'numero_compte_reçu.required' => 'Le champ numéro de compte reçu est requis.',
                 'numero_compte_reçu.numeric' => 'Le numéro de compte reçu doit être numérique.',
 
-                'devise_id.required' => 'Le champ devise est requis.',
-                'devise_id.exists' => 'La devise sélectionnée n\'existe pas.',
+                'devise_envoyee_id.required' => 'Le champ devise est requis.',
+                'devise_envoyee_id.exists' => 'La devise sélectionnée n\'existe pas.',
+
+                'devise_recue_id.required' => 'Le champ devise est requis.',
+                'devise_recue_id.exists' => 'La devise sélectionnée n\'existe pas.',
 
                 'montant_frais_inclus_envoye.required' => 'Le champ montant avec frais inclus envoyé est requis.',
                 'montant_frais_inclus_envoye.numeric' => 'Le montant avec frais inclus envoyé doit être numérique.',

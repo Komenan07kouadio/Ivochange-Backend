@@ -14,13 +14,13 @@ class Transactions extends Model
     protected $primaryKey = 'id_transaction';
 
     protected $fillable = [
-        'transaction_id',
         'utilisateur_id',
         'montant_envoye',
-        'numero_compte_envoyé',
+        'numero_compte_envoye',
         'montant_reçu',
         'numero_compte_reçu',
-        'devise_id',
+        'devise_envoyee_id',
+        'devise_recue_id',
         'montant_frais_inclus_envoye',
         'montant_frais_inclus_reçu',
         'statut',

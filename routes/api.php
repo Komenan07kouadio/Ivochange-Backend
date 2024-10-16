@@ -52,10 +52,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/actualites/{id}', [ActualiteController::class, 'destroy']);
 
     // Transaction
-    Route::get('/create', [TransactionController::class, 'index']);
-    Route::post('/liste', [TransactionController::class, 'store']);
-    Route::get('/transactions/{id}', [TransactionController::class, 'show']);
-    Route::put('/transactions/{id}', [TransactionController::class, 'update']);
+    Route::get('/transactions', [TransactionController::class, 'index']); // Liste toutes les transactions de l'utilisateur
+    Route::post('/transactions', [TransactionController::class, 'store']); // Crée une nouvelle transaction
+    Route::get('/transactions/{id}', [TransactionController::class, 'show']); // Affiche une transaction spécifique
+    Route::put('/transactions/{id}', [TransactionController::class, 'update']); // Met à jour une transaction spécifique
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
 });
 

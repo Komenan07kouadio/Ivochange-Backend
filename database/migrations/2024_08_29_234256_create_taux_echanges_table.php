@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamps();  // Colonnes created_at et updated_at
 
             // Définition de la clé étrangère
-            $table->foreign('devise_id')->references('id')->on('devises')->onDelete('cascade');
+            $table->foreign('devise_id')->references('devise_id')->on('devises')->onDelete('cascade');
         });
     }
 

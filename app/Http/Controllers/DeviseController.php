@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Devises;
 use Illuminate\Http\Request;
 use App\Http\Resources\DeviseResource;
+use Illuminate\Support\Facades\Log;
 
 class DeviseController extends Controller
 {
@@ -15,15 +16,21 @@ class DeviseController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        Log::info('Entrée dans la méthode store');
+
+        $validated = $request->validate([
             'nom' => 'required|unique:devises',
             'symbole' => 'required',
-            'reserve'=> 'required',
+            'reserve' => 'required',
         ]);
 
-        $devise = Devises::create($request->all());
+        $devise = Devises::create($validated);
 
-        return new DeviseResource($devise);
+        Log::info('Devise créée', ['devise' => $devise]);
+
+
+        //return new DeviseResource($devise);
+        return response()->json(['message' => 'Devise enregistrée avec succès']);
     }
 
     public function show($id)
@@ -36,7 +43,7 @@ class DeviseController extends Controller
         $devise = Devises::findOrFail($id);
 
         $request->validate([
-            'nom' => 'required|unique:devises,code,' . $devise->id . '|max:3',
+            'nom' => 'required|unique:devises,code,' . $devise->id . '|max:10',
             'symbole' => 'required',
             'reserve'=> 'required',
         ]);
@@ -46,5 +53,5 @@ class DeviseController extends Controller
         return new DeviseResource($devise);
     }
 
-    
+
 }
