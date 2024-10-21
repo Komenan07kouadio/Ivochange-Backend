@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [UtilisateurController::class, 'login'])->name('login');
 // Route::post('/login', [UtilisateurController::class, 'login']);
 Route::post('/create', [UtilisateurController::class, 'store']);
-Route::post('/logout', [UtilisateurController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/logout', [UtilisateurController::class, 'logout'])->middleware('auth:api');
 
 
 // Routes protégées
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     // Utilisateur
     Route::get('/liste', [UtilisateurController::class, 'index']);
     Route::get('/utilisateurs/{id}', [UtilisateurController::class, 'show']);
@@ -56,7 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/transactions', [TransactionController::class, 'store']); // Crée une nouvelle transaction
     Route::get('/transactions/{id}', [TransactionController::class, 'show']); // Affiche une transaction spécifique
     Route::put('/transactions/{id}', [TransactionController::class, 'update']); // Met à jour une transaction spécifique
-    Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+
 });
 
 
